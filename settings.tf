@@ -6,7 +6,7 @@ resource "null_resource" "update_zed_settings" {
         username = "nonroot"
         port     = container.ports[0].external
         args     = ["-i", "${abspath(path.module)}/private_key.pem"]
-        projects = [{ paths = ["/home/nonroot"] }]
+        projects = [{ paths = ["/home/nonroot/project"] }]
       }
     ])
   }

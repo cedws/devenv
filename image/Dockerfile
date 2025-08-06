@@ -2,14 +2,11 @@ FROM alpine
 
 ARG SSH_PUBKEY
 
-RUN apk add shadow fish mise tini openssh-server
+RUN apk add shadow git fish mise tini openssh-server
 
 RUN adduser -D -s /usr/bin/fish nonroot
 RUN usermod -p '*' nonroot
 RUN ssh-keygen -A
-
-RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
-RUN echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 
 ARG CHEZMOI_VERSION="2.63.1"
 ARG CHEZMOI_URL="https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_linux_arm64.apk"
@@ -38,6 +35,8 @@ RUN chezmoi init --apply cedws
 
 RUN echo ${SSH_PUBKEY} > /home/nonroot/.ssh/authorized_keys
 RUN chmod 600 /home/nonroot/.ssh/authorized_keys
+
+RUN mkdir /home/nonroot/project
 
 USER root
 ENTRYPOINT ["tini", "--", "/usr/sbin/sshd", "-D"]
