@@ -8,6 +8,11 @@ resource "docker_container" "project_sidecar" {
   image    = "nginxdemos/hello"
   name     = "project-${each.key}-sidecar"
 
+  log_opts = {
+    max-file = "5"
+    max-size = "20m"
+  }
+
   networks_advanced {
     name = docker_network.project_network[each.key].name
   }
@@ -20,6 +25,11 @@ resource "docker_container" "project_sidecar" {
 resource "docker_container" "project_metadata" {
   image = "nginxdemos/hello"
   name  = "project-metadata"
+
+  log_opts = {
+    max-file = "5"
+    max-size = "20m"
+  }
 
   networks_advanced {
     name = docker_network.master.name
