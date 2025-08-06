@@ -54,6 +54,11 @@ resource "docker_volume" "workspace_shared" {
   name = "workspace-shared"
 }
 
+resource "docker_volume" "project" {
+  for_each = var.projects
+  name     = "project-${each.key}"
+}
+
 resource "docker_container" "project" {
   for_each = var.projects
   image    = docker_image.workspace.image_id
@@ -72,6 +77,11 @@ resource "docker_container" "project" {
   volumes {
     volume_name    = docker_volume.workspace_shared.name
     container_path = "/shared"
+  }
+
+  volumes {
+    volume_name    = docker_volume.project[each.key].name
+    container_path = "/home/nonroot/project"
   }
 
   labels {
