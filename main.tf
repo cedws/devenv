@@ -32,13 +32,13 @@ resource "docker_image" "workspace" {
   name = "workspace"
 
   triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(path.module, "image/*") : filesha1(f)]))
+    dir_sha1 = sha1(join("", [for f in fileset(path.module, "image/workspace/*") : filesha1(f)]))
   }
 
   build {
     tag        = ["workspace:latest"]
-    context    = "image"
-    dockerfile = "image/Dockerfile"
+    context    = "image/workspace"
+    dockerfile = "image/workspace/Dockerfile"
     build_args = {
       SSH_PUBKEY = tls_private_key.ssh_key.public_key_openssh
     }
@@ -48,10 +48,15 @@ resource "docker_image" "workspace" {
 resource "docker_network" "project_network" {
   for_each = var.projects
   name     = "project-${each.key}"
+  internal = true
 }
 
-resource "docker_volume" "workspace_shared" {
-  name = "workspace-shared"
+resource "docker_network" "proxy_network" {
+  name = "proxy-network"
+}
+
+resource "docker_volume" "project_shared" {
+  name = "project-shared"
 }
 
 resource "docker_volume" "project" {
@@ -75,7 +80,7 @@ resource "docker_container" "project" {
   }
 
   volumes {
-    volume_name    = docker_volume.workspace_shared.name
+    volume_name    = docker_volume.project_shared.name
     container_path = "/shared"
   }
 

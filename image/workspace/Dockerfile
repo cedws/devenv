@@ -2,7 +2,7 @@ FROM alpine
 
 ARG SSH_PUBKEY
 
-RUN apk add shadow git fish mise tini openssh-server
+RUN apk add shadow git fish mise tini openssh-server curl
 
 RUN adduser -D -s /usr/bin/fish nonroot
 RUN usermod -p '*' nonroot
@@ -37,6 +37,13 @@ RUN echo ${SSH_PUBKEY} > /home/nonroot/.ssh/authorized_keys
 RUN chmod 600 /home/nonroot/.ssh/authorized_keys
 
 RUN mkdir /home/nonroot/project
+
+ENV HTTP_PROXY=http://project-proxy:8888
+ENV HTTPS_PROXY=http://project-proxy:8888
+ENV http_proxy=http://project-proxy:8888
+ENV https_proxy=http://project-proxy:8888
+ENV NO_PROXY=localhost,127.0.0.1,project-proxy
+ENV no_proxy=localhost,127.0.0.1,project-proxy
 
 USER root
 ENTRYPOINT ["tini", "--", "/usr/sbin/sshd", "-D"]
