@@ -48,7 +48,6 @@ resource "docker_image" "workspace" {
 resource "docker_network" "project_network" {
   for_each = var.projects
   name     = "project-${each.key}"
-  internal = true
 }
 
 resource "docker_network" "proxy_network" {
