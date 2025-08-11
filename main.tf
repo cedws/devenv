@@ -45,13 +45,10 @@ resource "docker_image" "workspace" {
   }
 }
 
-resource "docker_network" "project_network" {
+resource "docker_network" "project" {
   for_each = var.projects
   name     = "project-${each.key}"
-}
-
-resource "docker_network" "proxy_network" {
-  name = "proxy-network"
+  internal = true
 }
 
 resource "docker_volume" "project_shared" {
@@ -75,7 +72,7 @@ resource "docker_container" "project" {
   }
 
   networks_advanced {
-    name = docker_network.project_network[each.key].name
+    name = docker_network.project[each.key].name
   }
 
   volumes {
@@ -91,9 +88,5 @@ resource "docker_container" "project" {
   labels {
     label = "workspace"
     value = each.key
-  }
-
-  ports {
-    internal = 22
   }
 }

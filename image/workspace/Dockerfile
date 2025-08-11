@@ -38,12 +38,8 @@ RUN chmod 600 /home/nonroot/.ssh/authorized_keys
 
 RUN mkdir /home/nonroot/project
 
-ENV HTTP_PROXY=http://project-proxy:8888
-ENV HTTPS_PROXY=http://project-proxy:8888
-ENV http_proxy=http://project-proxy:8888
-ENV https_proxy=http://project-proxy:8888
-ENV NO_PROXY=localhost,127.0.0.1,project-proxy
-ENV no_proxy=localhost,127.0.0.1,project-proxy
+COPY global.fish /etc/fish/conf.d/global.fish
 
 USER root
+
 ENTRYPOINT ["tini", "--", "/usr/sbin/sshd", "-D"]

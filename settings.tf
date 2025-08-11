@@ -1,7 +1,7 @@
 resource "null_resource" "update_zed_settings" {
   triggers = {
     ssh_connections = jsonencode([
-      for container in docker_container.project : {
+      for container in docker_container.sidecar : {
         host     = "localhost"
         username = "nonroot"
         port     = container.ports[0].external

@@ -1,4 +1,8 @@
-resource "docker_image" "project_proxy" {
+resource "docker_network" "proxy" {
+  name = "proxy-network"
+}
+
+resource "docker_image" "proxy" {
   name = "proxy"
 
   triggers = {
@@ -13,8 +17,8 @@ resource "docker_image" "project_proxy" {
 }
 
 resource "docker_container" "proxy" {
-  image     = docker_image.project_proxy.image_id
-  name      = "project-proxy"
+  image     = docker_image.proxy.image_id
+  name      = "proxy"
   read_only = true
 
   log_opts = {
@@ -23,14 +27,14 @@ resource "docker_container" "proxy" {
   }
 
   networks_advanced {
-    name = docker_network.proxy_network.name
+    name = docker_network.proxy.name
   }
 
   dynamic "networks_advanced" {
     for_each = var.projects
 
     content {
-      name = docker_network.project_network[networks_advanced.key].name
+      name = docker_network.project[networks_advanced.key].name
     }
   }
 }

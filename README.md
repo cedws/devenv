@@ -4,9 +4,11 @@ I'm experimenting with containerised dev environments mainly for security reason
 
 Obviously, containers do not provide a strong security boundary, but they're strong enough for all but the most sophisticated attacks. I'm not important enough for an attacker to burn a container zero day on me. In addition, I work on a MacBook and use OrbStack which runs containers in a VM, so they're at least not running in the same address space.
 
-I'd like to be able to have a separate development environment per project. This way, if one container is compromised, source code and secrets from other projects are secured.
+Currently I'm creating a separate development environment container for each project. This way, if one container is compromised, source code and secrets from other projects are protected and blast radius is minimised.
 
-It would also be nice if I could find a way to create project-specific GitHub tokens so that the container can only read/write to a single repository. It seems that Personal Access Tokens (PATs) can only be manually created and I'm too lazy to manage a PAT for every project, but maybe there's some other way.
+The project containers have restricted network access -- they're on an internal Docker network and can only send outbound HTTP(S) requests via a proxy container which has a domain whitelist.
+
+I'd like to find a way to create project-specific GitHub tokens so that each container can only read/write to a single repository under my own user. It seems that Personal Access Tokens (PATs) can only be manually created and I'm too lazy to manage a PAT for every project, but maybe there's some other way.
 
 I'm also experimenting with a container 'sidecar' mechanism. Similar to Kubernetes' sidecar concept, I'm giving each project container a sidecar in the same Docker network. The sidecar is also part of another Docker network intended to run a metadata API. The end goal is that the sidecar facilitates a cloud-like metadata API and a way for the metadata API to verify a client's pod identity. This pod identity could be used to gain access to secrets similar to how EKS Pod Identity works.
 
